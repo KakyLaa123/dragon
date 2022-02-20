@@ -1661,6 +1661,10 @@ footer{
         height: 0;
     }
 
+    .reviews__review-cards{
+        scrollbar-width: none;
+    }
+
     .card-review__description{
         width: 219px;
     }
@@ -1737,6 +1741,10 @@ footer{
 
 .main__partners::-webkit-scrollbar{
     height: 0;
+}
+
+.main__partners{
+    scrollbar-width: none;
 }
 
 @media (max-width: 767px) {
