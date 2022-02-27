@@ -10,14 +10,16 @@ const bottomSlider = document.querySelectorAll('.review-cards__card-review');
 const bottomSliderName = document.querySelectorAll('.name-score__name');
 const bottomSliderPrev = document.querySelector('.change-btns__prev');
 const bottomSliderNext = document.querySelector('.change-btns__next');
+const sliderArea = document.querySelector('.main__slider');
 const mainSlider = document.querySelectorAll('.slide__aside');
 const mainSliderPrev = document.querySelector('.change__prev-slide');
 const mainSliderNext = document.querySelector('.change__next-slide');
 const mainSliderGrade = document.querySelectorAll('.num__slider-point');
-const catalogBtn = document.querySelector('.btn__catalog');
+const catalogBtn = document.querySelectorAll('.btn__catalog');
 const catalogBtnClosed = document.querySelectorAll('.catalog__img__closed');
 const catalogBtnOpened = document.querySelectorAll('.catalog__img__opened');
 const catalogArea = document.querySelector('.catalog-box');
+const catalogClose = document.querySelector('.prop-ref__img-close');
 
 
 
@@ -35,26 +37,39 @@ function catalogFunction(){
 
     let i = 1;
 
-    catalogBtn.addEventListener('click', () => {
-        if(i % 2 != 0){
-            catalogArea.classList.remove('hidden');
-            i++;
-            catalogBtnClosed.forEach(elem => {
-                elem.classList.add('hidden');
-            });
-            catalogBtnOpened.forEach(elem => {
-                elem.classList.remove('hidden');
-            });
-        }else{
-            catalogArea.classList.add('hidden');
-            i++;
-            catalogBtnOpened.forEach(elem => {
-                elem.classList.add('hidden');
-            });
-            catalogBtnClosed.forEach(elem => {
-                elem.classList.remove('hidden');
-            });
-        }
+    catalogClose.addEventListener('click', () => {
+        catalogArea.classList.add('hidden');
+        i++;
+        catalogBtnOpened.forEach(elem => {
+            elem.classList.add('hidden');
+        });
+        catalogBtnClosed.forEach(elem => {
+            elem.classList.remove('hidden');
+        });
+    });
+
+    catalogBtn.forEach(elem => {
+        elem.addEventListener('click', () => {
+            if(i % 2 != 0){
+                catalogArea.classList.remove('hidden');
+                i++;
+                catalogBtnClosed.forEach(elem => {
+                    elem.classList.add('hidden');
+                });
+                catalogBtnOpened.forEach(elem => {
+                    elem.classList.remove('hidden');
+                });
+            }else{
+                catalogArea.classList.add('hidden');
+                i++;
+                catalogBtnOpened.forEach(elem => {
+                    elem.classList.add('hidden');
+                });
+                catalogBtnClosed.forEach(elem => {
+                    elem.classList.remove('hidden');
+                });
+            }
+        });
     });
 }
 
@@ -97,13 +112,68 @@ function mainSliderChange(){
             mainSliderNext.disabled = false;
         }
     });
+    sliderArea.addEventListener('touchstart', handleTouchStart, false);  
+    sliderArea.addEventListener('touchmove', handleTouchMove, false);
+
+
+    let xDown = null;                                                        
+    let yDown = null;                                                        
+
+    function handleTouchStart(evt) {                                         
+        xDown = evt.touches[0].clientX;                                      
+        yDown = evt.touches[0].clientY;                                      
+    }                                     
+
+    function handleTouchMove(evt) {
+        if ( ! xDown || ! yDown ) {
+            return;
+        }
+
+        let xUp = evt.touches[0].clientX;                                    
+        let yUp = evt.touches[0].clientY;
+
+        let xDiff = xDown - xUp;
+        let yDiff = yDown - yUp;
+        if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {
+            if ( xDiff > 0 ) {
+                i++;
+                mainSlider[i].scrollIntoView({behavior: "smooth", inline: "center", block: "nearest"});
+                mainSliderGrade.forEach(elem => {
+                    elem.classList.remove('num__slider-point__selected');
+                });
+                mainSliderGrade[i * 2].classList.add('num__slider-point__selected');
+                mainSliderGrade[(i * 2) + 1].classList.add('num__slider-point__selected');
+                if(i >= mainSlider.length - 1){
+                    i = -1;
+                }
+            } else {
+                if(i < 1){
+                    i = 5;
+                }
+                i--;
+                mainSlider[i].scrollIntoView({behavior: "smooth", inline: "center", block: "nearest"});
+                mainSliderGrade.forEach(elem => {
+                    elem.classList.remove('num__slider-point__selected');
+                });
+                if(i != 0){
+                    mainSliderGrade[i * 2].classList.add('num__slider-point__selected');
+                    mainSliderGrade[(i * 2) + 1].classList.add('num__slider-point__selected');
+                }else{
+                    mainSliderGrade[i].classList.add('num__slider-point__selected');
+                    mainSliderGrade[i + 1].classList.add('num__slider-point__selected');
+                    console.log(i);
+                }
+            }           
+            xDown = null;
+            yDown = null;                
+        }
+    }
 }
 
 function textLimit(){
     bottomSliderName.forEach(elem => {
         let elementTrim = elem.textContent.trim();
         elem.textContent = elementTrim.slice(0, 30) + '...';
-        console.log(elementTrim.slice(0, 30));
     });
 }
 
